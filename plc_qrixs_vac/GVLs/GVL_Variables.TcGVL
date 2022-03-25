@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.18">
+  <GVL Name="GVL_Variables" Id="{a601bfaa-cee8-44e2-bcf9-804538feec62}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	{attribute 'pytmc' := '
+		pv: PLC:QRIXS:VAC:OVRDON
+		io: io
+	'}
+	xSystemOverrideMode_qRIXS	: BOOL := FALSE; (* Global system override for the qRIXS Vacuum System EBD*)
+
+	// io_fbFFHWO: FB_FFHWO;
+	
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

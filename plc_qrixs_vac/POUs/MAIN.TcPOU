@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.18">
+  <POU Name="MAIN" Id="{aaf1777d-41f2-44ad-9cd7-60436166e3ca}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	xExtILK_OK_OPT : BOOL := True;
+	xExtILK_OK_BLW : BOOL;
+	xExtILK_OK_DET : BOOL;
+	iPressTorrerance : REAL := 1.0; // Torr
+	stUSG_dummy : ST_VG;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+(* Gamma Ion Pump *)
+	qRIXS_OPT_PIP_01(i_stGauge:=qRIXS_OPT_GCC_01.IG, i_xOverrideMode:= GVL_Variables.xSystemOverrideMode_qRIXS);
+	qRIXS_DET_PIP_01(i_stGauge:=qRIXS_DET_GCC_01.IG, i_xOverrideMode:= GVL_Variables.xSystemOverrideMode_qRIXS);
+
+(* Pirani MKS 275 Gauges *)
+	qRIXS_OPT_GPI_01(PG=>);	
+	qRIXS_DET_GPI_01(PG=>);
+
+(* Full Range Gauges *)
+	qRIXS_BLW_GFR_01(PG=>);
+
+(* Cold Cathode Gauges *)
+	qRIXS_OPT_GCC_01(PG:=qRIXS_OPT_GPI_01.PG, IG=>, bEP:=FALSE);
+	qRIXS_DET_GCC_01(PG:=qRIXS_DET_GPI_01.PG, IG=>, bEP:=FALSE);
+	
+(* Normally Closed Vate Valve *)
+//(*
+	stUSG_dummy := qRIXS_OPT_GCC_01.IG;
+	qRIXS_OPT_VGC_01(
+		i_stUSG := stUSG_dummy,
+		i_stDSG := qRIXS_OPT_GCC_01.IG,
+		i_xExt_OK := xExtILK_OK_OPT,
+		i_xOverrideMode:=GVL_Variables.xSystemOverrideMode_qRIXS,
+		io_fbFFHWO := GVL_PMPS.g_FastFaultOutput1,
+		fbArbiter := GVL_PMPS.g_fbArbiter1,
+		iq_stValve =>,
+	);
+// *)
+// (*
+	qRIXS_BLW_VRC_01(
+		i_xExtILK_OK := xExtILK_OK_BLW,
+		i_xOverrideMode:=GVL_Variables.xSystemOverrideMode_qRIXS,
+		iq_stValve =>
+	);
+// *)
+// (*
+	qRIXS_DET_VRC_01(
+		i_xExtILK_OK := xExtILK_OK_DET,
+		i_xOverrideMode:=GVL_Variables.xSystemOverrideMode_qRIXS,
+		iq_stValve =>,
+	);
+// *)
+
+
+// Calc pressure Difference
+xExtILK_OK_BLW := 	( qRIXS_OPT_VGC_01.iq_stValve.i_xClsLS AND qRIXS_OPT_GPI_01.PG.xPRESS_OK AND qRIXS_BLW_GFR_01.PG.xPRESS_OK AND (qRIXS_OPT_GPI_01.PG.rPRESS - qRIXS_BLW_GFR_01.PG.rPRESS) < iPressTorrerance)
+					OR (qRIXS_OPT_GCC_01.IG.xPRESS_OK AND qRIXS_BLW_GFR_01.PG.xPRESS_OK AND (qRIXS_OPT_GCC_01.IG.rPRESS - qRIXS_BLW_GFR_01.PG.rPRESS) < iPressTorrerance);
+xExtILK_OK_DET := 	(qRIXS_DET_GPI_01.PG.xPRESS_OK AND qRIXS_BLW_GFR_01.PG.xPRESS_OK AND (qRIXS_DET_GPI_01.PG.rPRESS - qRIXS_BLW_GFR_01.PG.rPRESS) < iPressTorrerance)
+					OR (qRIXS_DET_GCC_01.IG.xPRESS_OK AND qRIXS_BLW_GFR_01.PG.xPRESS_OK AND (qRIXS_DET_GCC_01.IG.rPRESS - qRIXS_BLW_GFR_01.PG.rPRESS) < iPressTorrerance);
+
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="6" Count="1" />
+      <LineId Id="45" Count="1" />
+      <LineId Id="25" Count="1" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="41" Count="1" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="13" Count="1" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="47" Count="1" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="111" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="117" Count="0" />
+      <LineId Id="90" Count="0" />
+      <LineId Id="123" Count="0" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="91" Count="1" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="118" Count="0" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="96" Count="1" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="129" Count="1" />
+      <LineId Id="128" Count="0" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="137" Count="0" />
+      <LineId Id="135" Count="0" />
+      <LineId Id="138" Count="0" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="30" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
